@@ -318,10 +318,14 @@ This project ensures that even if an attacker gains access to stored data, they 
 
 ------------------------------
 
-**Backend code used in python :**
+**DataBase used in python :**
 
          client = MongoClient("mongodb://localhost:27017/")
          db = client["CanISeeYouInHeaven"]
+
+---------------------------------------
+
+**Backend used in python** - Flask
 
 ---------------------------------------
 
