@@ -66,153 +66,153 @@ To prevent spoofing with photos/videos, a **Blink Detection** mechanism can be a
 ## 📊 Flow Diagram
 **Password Flow Diagram :**
 
-                                                                          [User Enters Password]
-                                                                                    |
-                                                                                    v
-                                                                          [Generate Salt (bcrypt.gensalt)]
-                                                                                    |
-                                                                                    v
-                                                                          [Hash Password with bcrypt]
-                                                                                    |
-                                                                                    v
-                                                                          [Store Hashed Password in Database]
-                                                                                    |
-                                                                                    v
-                                                                          [When Logging In]
-                                                                                    |
-                                                                                    v
-                                                                          [User Enters Password Again]
-                                                                                    |
-                                                                                    v
-                                                                          [Retrieve Stored Hash from DB]
-                                                                                    |
-                                                                                    v
-                                                                          [bcrypt.checkpw(Input, Stored Hash)]
-                                                                                    |
-                                                                             Yes ---+--- No
-                                                                             |            |
-                                                                             v            v
-                                                                          [Password OK]  [Reject Login]
+                                                     [User Enters Password]
+                                                               |
+                                                               v
+                                                     [Generate Salt (bcrypt.gensalt)]
+                                                               |
+                                                               v
+                                                     [Hash Password with bcrypt]
+                                                               |
+                                                               v
+                                                     [Store Hashed Password in Database]
+                                                               |
+                                                               v
+                                                     [When Logging In]
+                                                               |
+                                                               v
+                                                     [User Enters Password Again]
+                                                               |
+                                                               v
+                                                     [Retrieve Stored Hash from DB]
+                                                               |
+                                                               v
+                                                     [bcrypt.checkpw(Input, Stored Hash)]
+                                                               |
+                                                        Yes ---+--- No
+                                                        |            |
+                                                        v            v
+                                                     [Password OK]  [Reject Login]
 
 
 **Face login Flow Diagram :**
 
 
-[User Provides Live Face or Image]
-          |
-          v
-[Capture Image via Camera]
-          |
-          v
-[Extract Face Encoding (Numerical Representation)]
-          |
-          v
-[Encrypt Encoding using Fernet]
-          |
-          v
-[Store Encrypted Encoding in Database]
-          |
-          v
-[When Authenticating]
-          |
-          v
-[Capture New Face Image]
-          |
-          v
-[Extract Face Encoding]
-          |
-          v
-[Decrypt Stored Encoding]
-          |
-          v
-[Compare New Encoding with Stored Encoding]
-          |
-   Match ---+--- No Match
-   |               |
-   v               v
-[Face OK]      [Reject Login]
+                                                   [User Provides Live Face or Image]
+                                                             |
+                                                             v
+                                                   [Capture Image via Camera]
+                                                             |
+                                                             v
+                                                   [Extract Face Encoding (Numerical Representation)]
+                                                             |
+                                                             v
+                                                   [Encrypt Encoding using Fernet]
+                                                             |
+                                                             v
+                                                   [Store Encrypted Encoding in Database]
+                                                             |
+                                                             v
+                                                   [When Authenticating]
+                                                             |
+                                                             v
+                                                   [Capture New Face Image]
+                                                             |
+                                                             v
+                                                   [Extract Face Encoding]
+                                                             |
+                                                             v
+                                                   [Decrypt Stored Encoding]
+                                                             |
+                                                             v
+                                                   [Compare New Encoding with Stored Encoding]
+                                                             |
+                                                      Match ---+--- No Match
+                                                      |               |
+                                                      v               v
+                                                   [Face OK]      [Reject Login]
 
 
 
 **Blink Pattern Flow Diagram :**
 
-**While In Signup**
+**While In Signup :**
 
-[User Signup Starts]
-       |
-       v
-[Live Camera Feed Starts]
-       |
-       v
-[Detect Face & Eye Landmarks]
-       |
-       v
-[User Performs Blink Pattern]
-       |
-       v
-[EAR Analysis Confirms Pattern]
-       |
-       v
-[Store Blink Pattern Data (Encrypted) in Database]
-       |
-       v
-[Proceed to Face Encoding]
-       |
-       v
-[Encrypt & Store Face Encoding in Database]
-       |
-       v
-[Hash & Store Password in Database]
-       |
-       v
-[Signup Successful]
+                                                [User Signup Starts]
+                                                       |
+                                                       v
+                                                [Live Camera Feed Starts]
+                                                       |
+                                                       v
+                                                [Detect Face & Eye Landmarks]
+                                                       |
+                                                       v
+                                                [User Performs Blink Pattern]
+                                                       |
+                                                       v
+                                                [EAR Analysis Confirms Pattern]
+                                                       |
+                                                       v
+                                                [Store Blink Pattern Data (Encrypted) in Database]
+                                                       |
+                                                       v
+                                                [Proceed to Face Encoding]
+                                                       |
+                                                       v
+                                                [Encrypt & Store Face Encoding in Database]
+                                                       |
+                                                       v
+                                                [Hash & Store Password in Database]
+                                                       |
+                                                       v
+                                                [Signup Successful]
 
 
 **In Signin :**
 
-[User Signin Starts]
-       |
-       v
-[Live Camera Feed Starts]
-       |
-       v
-[Detect Face & Eye Landmarks]
-       |
-       v
-[User Performs Blink Pattern]
-       |
-       v
-[EAR Analysis Confirms Pattern]
-       |
-       v
-[Retrieve & Decrypt Stored Blink Pattern from Database]
-       |
-       v
-[Compare Live Pattern with Stored Pattern]
-       |
-   Match? -------- No ---> [Authentication Failed]
-       |
-      Yes
-       |
-       v
-[Proceed to Face Encoding Verification]
-       |
-       v
-[Retrieve Stored Face Encoding from Database]
-       |
-       v
-[Compare Live Encoding with Stored Encoding]
-       |
-   Match? -------- No ---> [Authentication Failed]
-       |
-      Yes
-       |
-       v
-[Password Check (Hashed)]
-       |
-   Match? -------- No ---> [Authentication Failed]
-       |
-      Yes
-       |
-       v
-[Authentication Successful]
+                                                [User Signin Starts]
+                                                       |
+                                                       v
+                                                [Live Camera Feed Starts]
+                                                       |
+                                                       v
+                                                [Detect Face & Eye Landmarks]
+                                                       |
+                                                       v
+                                                [User Performs Blink Pattern]
+                                                       |
+                                                       v
+                                                [EAR Analysis Confirms Pattern]
+                                                       |
+                                                       v
+                                                [Retrieve & Decrypt Stored Blink Pattern from Database]
+                                                       |
+                                                       v
+                                                [Compare Live Pattern with Stored Pattern]
+                                                       |
+                                                   Match? -------- No ---> [Authentication Failed]
+                                                       |
+                                                      Yes
+                                                       |
+                                                       v
+                                                [Proceed to Face Encoding Verification]
+                                                       |
+                                                       v
+                                                [Retrieve Stored Face Encoding from Database]
+                                                       |
+                                                       v
+                                                [Compare Live Encoding with Stored Encoding]
+                                                       |
+                                                   Match? -------- No ---> [Authentication Failed]
+                                                       |
+                                                      Yes
+                                                       |
+                                                       v
+                                                [Password Check (Hashed)]
+                                                       |
+                                                   Match? -------- No ---> [Authentication Failed]
+                                                       |
+                                                      Yes
+                                                       |
+                                                       v
+                                                [Authentication Successful]
