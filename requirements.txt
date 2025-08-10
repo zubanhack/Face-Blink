@@ -1,0 +1,9 @@
+Flask
+opencv-python
+numpy
+scipy
+dlib
+face_recognition
+cryptography
+pymongo
+bcrypt
