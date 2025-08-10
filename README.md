@@ -31,7 +31,7 @@ This project ensures that even if an attacker gains access to stored data, they 
 - **Libraries:** OpenCV, SciPy
 
 ---
-**Frontend code used in python :**
+**Frontend code used in python - HTML,CSS,JavaScript**
 
             #####################################
             # HTML Templates
@@ -318,14 +318,88 @@ This project ensures that even if an attacker gains access to stored data, they 
 
 ------------------------------
 
-**DataBase used in python :**
+**DataBase used in python - MongoDB** 
 
          client = MongoClient("mongodb://localhost:27017/")
          db = client["CanISeeYouInHeaven"]
 
 ---------------------------------------
 
-**Backend used in python** - Flask
+**Backend used in python - Flask**
+
+                        #####################################
+                        # Flask Routes
+                        
+                        @app.route('/')
+                        def home():
+                            return render_template_string(html_code)
+                        
+                        @app.route('/signup_credentials', methods=['POST'])
+                        def signup_credentials():
+                            data = request.get_json()
+                            username = data.get("username")
+                            password = data.get("password")
+                            
+                            if not username or not password:
+                                return jsonify({"message": "Username and password are required."}), 400
+                        
+                            # enforce JS policy server-side
+                            strength = get_password_strength(password)
+                            if strength == 'Weak':
+                                return jsonify({
+                                    "message": "Password too weak. It must be at least 8 characters and include uppercase, lowercase, digits, and special symbols."
+                                }), 400
+                        
+                            pattern = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};\'":\\|,.<>\/?]).{8,16}$'
+                            if not re.match(pattern, password):
+                                return jsonify({"message": "Password must be 8-16 characters long and include uppercase, lowercase, digit, and special character."})
+                        
+                            result = process_signup(username, password)
+                            if isinstance(result, str) and "Registration successful" in result:
+                                return jsonify({"redirect": url_for('welcome', uid=username)})
+                            else:
+                                return jsonify({"message": result})
+                        
+                        @app.route('/signin_credentials', methods=['POST'])
+                        def signin_credentials():
+                            data = request.get_json()
+                            username = data.get("username")
+                            password = data.get("password")
+                            
+                            if not username or not password:
+                                return jsonify({"message": "Username and password are required."}), 400
+                            
+                            user_doc = db.users.find_one({"uid": username})
+                            if not user_doc:
+                                return jsonify({"message": "Username does not exist."})
+                            
+                            if "password_hash" not in user_doc:
+                                return jsonify({"message": "No password set for this user. Try facial authentication."}), 400
+                        
+                            if not check_password(password, user_doc["password_hash"]):
+                                return jsonify({"message": "Password is incorrect."}), 401
+                            
+                            return jsonify({"redirect": url_for('welcome', uid=username)})
+                        
+                        @app.route('/signin_facial', methods=['POST'])
+                        def signin_facial():
+                            data = request.get_json()
+                            username = data.get("username")
+                            if not username:
+                                return jsonify({"message": "Username required for facial authentication."}), 400
+                            result = run_signin_logic(username)
+                            if isinstance(result, str) and "Login successful" in result:
+                                return jsonify({"redirect": url_for('welcome', uid=username)})
+                            else:
+                                return jsonify({"message": result})
+                        
+                        @app.route('/welcome')
+                        def welcome():
+                            uid = request.args.get("uid")
+                            if not uid:
+                                return "Invalid Access"
+                            else:
+                                return render_template_string(welcome_page, uid=uid)
 
 ---------------------------------------
 
