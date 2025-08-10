@@ -1,5 +1,5 @@
 # Face-Blink
-Full-Stack Program based on advanced authentication system merging AI-driven face recognition with salted password hashing. Using encrypted biometrics and strong cryptography, it ensures top-tier security, resists brute-force attacks, and safeguards identities, delivering seamless and unbreakable two-factor protection.
+An advanced authentication system merging AI-driven face recognition with salted password hashing. Using encrypted biometrics and strong cryptography, it ensures top-tier security, resists brute-force attacks, and safeguards identities, delivering seamless and unbreakable two-factor protection.
 
 # 🔐 Face-Blink : AI – Secure Two-Factor Authentication with Face Recognition & Salted Password Hashing
 
@@ -31,6 +31,299 @@ This project ensures that even if an attacker gains access to stored data, they 
 - **Libraries:** OpenCV, SciPy
 
 ---
+**Frontend code used in python :**
+
+            #####################################
+            # HTML Templates
+            
+            welcome_page = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>Welcome</title>
+                <style>
+                    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #f4f4f4; }
+                    h1 { color: #333; }
+                </style>
+            </head>
+            <body>
+                <h1>Welcome, User {{ uid }}!</h1>
+                <p>You have successfully logged in.</p>
+            </body>
+            </html>
+            """
+            
+            html_code = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <title>Authentication Page</title>
+              <script>
+                function openSignupModal() {
+                    document.getElementById('signupModal').style.display = 'block';
+                }
+                function closeSignupModal() {
+                    document.getElementById('signupModal').style.display = 'none';
+                }
+                function openSigninModal() {
+                    document.getElementById('signinModal').style.display = 'block';
+                }
+                function closeSigninModal() {
+                    document.getElementById('signinModal').style.display = 'none';
+                }
+                
+                // Close modal if clicking outside of modal content
+                window.onclick = function(event) {
+                  var signupModal = document.getElementById("signupModal");
+                  var signinModal = document.getElementById("signinModal");
+                  if (event.target == signupModal) {
+                      signupModal.style.display = "none";
+                  }
+                  if (event.target == signinModal) {
+                      signinModal.style.display = "none";
+                  }
+                }
+                
+                function validateSignup() {
+                    const password = document.getElementById('signupPassword').value;
+                    const confirmPassword = document.getElementById('signupConfirmPassword').value;
+                    const submitBtn = document.getElementById('signupSubmit');
+                    const errorP = document.getElementById('signupError');
+                    
+                    // Password pattern: 8-16 characters; at least one uppercase, one lowercase, one digit, one special character.
+                    const pattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':"\\\\|,.<>\\/?]).{8,16}$/;
+                    
+                    if (!pattern.test(password)) {
+                        errorP.innerText = "Password must be 8-16 characters long and include uppercase, lowercase, digit, and special character.";
+                        submitBtn.disabled = true;
+                        return;
+                    }
+                    
+                    if (password !== confirmPassword) {
+                        errorP.innerText = "Password and Confirm Password do not match.";
+                        submitBtn.disabled = true;
+                        return;
+                    }
+                    
+                    errorP.innerText = "";
+                    submitBtn.disabled = false;
+                }
+                
+                function validateSignin() {
+                    const password = document.getElementById('signinPassword').value;
+                    const confirmPassword = document.getElementById('signinConfirmPassword').value;
+                    const submitBtn = document.getElementById('signinSubmit');
+                    const errorP = document.getElementById('signinError');
+                    
+                    if (password !== confirmPassword) {
+                        errorP.innerText = "Password and Confirm Password do not match.";
+                        submitBtn.disabled = true;
+                        return;
+                    }
+                    errorP.innerText = "";
+                    submitBtn.disabled = false;
+                }
+                
+                async function submitSignup() {
+                    const username = document.getElementById('signupUsername').value;
+                    const password = document.getElementById('signupPassword').value;
+                    const response = await fetch("/signup_credentials", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({username, password})
+                    });
+                    const data = await response.json();
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        document.getElementById("signupError").innerText = data.message;
+                    }
+                }
+                
+                async function submitSignin() {
+                    const username = document.getElementById('signinUsername').value;
+                    const password = document.getElementById('signinPassword').value;
+                    const response = await fetch("/signin_credentials", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({username, password})
+                    });
+                    const data = await response.json();
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        document.getElementById("signinError").innerText = data.message;
+                    }
+                }
+                
+                async function signinFacial() {
+                    const username = document.getElementById('signinUsername').value;
+                    if (!username) {
+                        document.getElementById("signinError").innerText = "Please enter your username for facial authentication.";
+                        return;
+                    }
+                    const response = await fetch("/signin_facial", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({username})
+                    });
+                    const data = await response.json();
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        document.getElementById("signinError").innerText = data.message;
+                    }
+                }
+            
+                // Password Strength Meter for Signup
+                function calculateStrength(pwd) {
+                  let score = 0;
+                  if (pwd.length >= 8) score++;
+                  if (/[a-z]/.test(pwd)) score++;
+                  if (/[A-Z]/.test(pwd)) score++;
+                  if (/[0-9]/.test(pwd)) score++;
+                  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+                  return score;
+                }
+                function updateSignupStrength() {
+                  const pwd = document.getElementById('signupPassword').value;
+                  const bar = document.getElementById('signupStrengthBar');
+                  const text = document.getElementById('signupStrengthText');
+            
+                  // enforce too-short passwords as Weak
+                  if (pwd.length > 0 && pwd.length < 8) {
+                    bar.style.width = '20%';
+                    bar.style.backgroundColor = '#e74c3c';
+                    text.textContent = 'Weak';
+                    return;
+                  }
+            
+                  const score = calculateStrength(pwd);
+                  const percent = (score / 5) * 100;
+                  bar.style.width = percent + '%';
+            
+                  if (score <= 2) {
+                    bar.style.backgroundColor = '#e74c3c';
+                    text.textContent = 'Weak';
+                  } else if (score === 3) {
+                    bar.style.backgroundColor = '#f39c12';
+                    text.textContent = 'Medium';
+                  } else if (score === 4) {
+                    bar.style.backgroundColor = '#27ae60';
+                    text.textContent = 'Strong';
+                  } else {
+                    bar.style.backgroundColor = '#2c3e50';
+                    text.textContent = 'Very Strong';
+                  }
+                }
+                document.addEventListener('DOMContentLoaded', () => {
+                  document.getElementById('signupPassword')
+                          .addEventListener('input', updateSignupStrength);
+                });
+              </script>
+              <style>
+                body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #f4f4f4; }
+                h1 { color: #333; }
+                button { font-size: 16px; padding: 10px 20px; margin: 10px; cursor: pointer; background-color: #007BFF; color: #fff; border: none; border-radius: 5px; transition: background-color 0.3s ease; }
+                button:hover { background-color: #0056b3; }
+                .modal {
+                  display: none;
+                  position: fixed;
+                  z-index: 1;
+                  left: 0; top: 0;
+                  width: 100%; height: 100%;
+                  overflow: auto;
+                  background-color: rgba(0,0,0,0.5);
+                }
+                .modal-content {
+                  background-color: #fefefe;
+                  margin: 10% auto;
+                  padding: 20px;
+                  border: 1px solid #888;
+                  width: 300px;
+                  border-radius: 5px;
+                }
+                #signupStrengthMeter {
+                  width: 100%;
+                  height: 8px;
+                  background: #e0e0e0;
+                  border-radius: 4px;
+                  margin: 8px 0;
+                }
+                #signupStrengthBar {
+                  height: 100%;
+                  width: 0;
+                  border-radius: 4px;
+                  transition: width 0.3s ease;
+                }
+                #signupStrengthText {
+                  margin: 4px 0 0;
+                  font-size: 0.9em;
+                }
+              </style>
+            </head>
+            <body>
+              <h1>Welcome to Our Website</h1>
+              <p>Please choose an option:</p>
+              <button onclick="openSigninModal()">Sign In</button>
+              <button onclick="openSignupModal()">Sign Up</button>
+              <p id="output"></p>
+              
+              <!-- Signup Modal -->
+              <div id="signupModal" class="modal">
+                <div class="modal-content">
+                  <h2>Sign Up</h2>
+                  <p>It will capture your face first after entering your username and password.<br>The password will be taken once only.</p>
+                  <label>Username:</label><br/>
+                  <input type="text" id="signupUsername" oninput="validateSignup()" required><br/><br/>
+                  <label>Password:</label><br/>
+                  <input type="text" id="signupPassword" oninput="validateSignup()" required><br/>
+                  
+                  <!-- strength meter inserted -->
+                  <div id="signupStrengthMeter">
+                    <div id="signupStrengthBar"></div>
+                  </div>
+                  <p id="signupStrengthText"></p><br/>
+                  
+                  <label>Confirm Password:</label><br/>
+                  <input type="text" id="signupConfirmPassword" oninput="validateSignup()" required><br/><br/>
+                  <button id="signupSubmit" onclick="submitSignup()" disabled>Submit</button>
+                  <button onclick="closeSignupModal()">Cancel</button>
+                  <p id="signupError" style="color:red;"></p>
+                </div>
+              </div>
+              
+              <!-- Signin Modal -->
+              <div id="signinModal" class="modal">
+                <div class="modal-content">
+                  <h2>Sign In</h2>
+                  <label>Username:</label><br/>
+                  <input type="text" id="signinUsername" oninput="validateSignin()" required><br/><br/>
+                  <label>Password:</label><br/>
+                  <input type="text" id="signinPassword" oninput="validateSignin()" required><br/><br/>
+                  <label>Confirm Password:</label><br/>
+                  <input type="text" id="signinConfirmPassword" oninput="validateSignin()" required><br/><br/>
+                  <button id="signinSubmit" onclick="submitSignin()" disabled>Submit</button>
+                  <button onclick="signinFacial()">Facial Authentication</button>
+                  <button onclick="closeSigninModal()">Cancel</button>
+                  <p id="signinError" style="color:red;"></p>
+                </div>
+              </div>
+              
+            </body>
+            </html>
+            """
+
+------------------------------
+
+**Backend code used in python :**
+
+         client = MongoClient("mongodb://localhost:27017/")
+         db = client["CanISeeYouInHeaven"]
+
+---------------------------------------
 
 ## 🔄 Authentication Flow
 1. **User Registration**
