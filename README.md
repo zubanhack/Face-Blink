@@ -66,33 +66,33 @@ To prevent spoofing with photos/videos, a **Blink Detection** mechanism can be a
 ## 📊 Flow Diagram
 **Password Flow Diagram :**
 
-  [User Enters Password]
-            |
-            v
-  [Generate Salt (bcrypt.gensalt)]
-            |
-            v
-  [Hash Password with bcrypt]
-            |
-            v
-  [Store Hashed Password in Database]
-            |
-            v
-  [When Logging In]
-            |
-            v
-  [User Enters Password Again]
-            |
-            v
-  [Retrieve Stored Hash from DB]
-            |
-            v
-  [bcrypt.checkpw(Input, Stored Hash)]
-            |
-     Yes ---+--- No
-     |            |
-     v            v
-  [Password OK]  [Reject Login]
+                                                                          [User Enters Password]
+                                                                                    |
+                                                                                    v
+                                                                          [Generate Salt (bcrypt.gensalt)]
+                                                                                    |
+                                                                                    v
+                                                                          [Hash Password with bcrypt]
+                                                                                    |
+                                                                                    v
+                                                                          [Store Hashed Password in Database]
+                                                                                    |
+                                                                                    v
+                                                                          [When Logging In]
+                                                                                    |
+                                                                                    v
+                                                                          [User Enters Password Again]
+                                                                                    |
+                                                                                    v
+                                                                          [Retrieve Stored Hash from DB]
+                                                                                    |
+                                                                                    v
+                                                                          [bcrypt.checkpw(Input, Stored Hash)]
+                                                                                    |
+                                                                             Yes ---+--- No
+                                                                             |            |
+                                                                             v            v
+                                                                          [Password OK]  [Reject Login]
 
 
 **Face login Flow Diagram :**
