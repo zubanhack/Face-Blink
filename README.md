@@ -10,7 +10,18 @@ It uses strong cryptography (AES/Fernet encryption) to protect biometric data, m
 This project ensures that even if an attacker gains access to stored data, they cannot retrieve user passwords or face data in readable form.
 
 ---
+## Practical video :
 
+https://www.linkedin.com/posts/syed-sameer-74929a315_cybersecurity-ai-facialrecognition-activity-7360324145118633986-c1-r?utm_source=share&utm_medium=member_desktop&rcm=ACoAAE_0SKkBzYKNuy3mRpCwJ4O8rkD1efNr34w
+
+---
+## To run the Program :
+
+            1 . First Download the MongoDB Compass GUI - https://www.mongodb.com/try/download/compass
+            2 . python ferner key generator.py
+            3 . python doit.py
+
+---
 ## 🚀 Key Features
 - **Two-Factor Authentication (2FA)**: Password + Face Recognition
 - **Bcrypt Salted Hashing** for password storage (one-way, non-reversible)
